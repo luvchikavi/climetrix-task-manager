@@ -1,0 +1,39 @@
+{
+  "partners": [
+    {
+      "name": "Avi",
+      "email": "aviluv@oporto-carbon.com"
+    },
+    {
+      "name": "Sivan",
+      "email": "SivanLa@bdo.co.il"
+    },
+    {
+      "name": "Lihi",
+      "email": "LihieI@bdo.co.il"
+    }
+  ],
+  "tasks": [],
+  "clients": [
+    {
+      "id": "39f87ee3-fd13-4caa-a3da-575f50d57b5e",
+      "name": "Check-Piont ",
+      "contact_name": "Lihi",
+      "contact_email": "",
+      "phone": "",
+      "notes": "",
+      "status": "Lead",
+      "meetings": [],
+      "created_at": "2026-01-18T10:47:48.843742",
+      "updated_at": "2026-01-18T10:47:48.843807"
+    }
+  ],
+  "categories": [
+    "Development",
+    "Marketing",
+    "Operations",
+    "Finance",
+    "Legal",
+    "General"
+  ]
+}
