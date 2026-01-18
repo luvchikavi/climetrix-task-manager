@@ -51,7 +51,7 @@ def backup_data():
 def create_task(title: str, description: str = "", assignee: str = "",
                 priority: str = "Medium", due_date: Optional[str] = None,
                 category: str = "General", links: list = None,
-                meeting_summary: str = "") -> dict:
+                meeting_summary: str = "", client: str = "") -> dict:
     return {
         "id": str(uuid.uuid4()),
         "title": title,
@@ -63,6 +63,7 @@ def create_task(title: str, description: str = "", assignee: str = "",
         "category": category,
         "links": links or [],
         "meeting_summary": meeting_summary,
+        "client": client,
         "comments": [],
         "created_at": datetime.now().isoformat(),
         "updated_at": datetime.now().isoformat()
