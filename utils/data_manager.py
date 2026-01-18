@@ -9,19 +9,6 @@ import streamlit as st
 DATA_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "tasks.json")
 BACKUP_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "backups")
 
-# Try to use Deta Base for cloud storage (persistent)
-DETA_KEY = None
-deta_db = None
-
-try:
-    DETA_KEY = st.secrets.get("DETA_KEY")
-    if DETA_KEY:
-        from deta import Deta
-        deta = Deta(DETA_KEY)
-        deta_db = deta.Base("climetrix_data")
-except Exception:
-    pass  # Fall back to file storage
-
 def get_default_data():
     return {
         "partners": [
@@ -35,42 +22,36 @@ def get_default_data():
     }
 
 def load_data():
-    # Try Deta first (cloud persistent storage)
-    if deta_db:
+    # Use session state to cache data during the session
+    if "app_data" in st.session_state:
+        return st.session_state.app_data
+
+    # Try to load from file
+    if os.path.exists(DATA_FILE):
         try:
-            result = deta_db.get("main_data")
-            if result:
-                return result.get("data", get_default_data())
-        except Exception:
+            with open(DATA_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                st.session_state.app_data = data
+                return data
+        except (json.JSONDecodeError, FileNotFoundError):
             pass
 
-    # Fall back to file storage
-    if not os.path.exists(DATA_FILE):
-        data = get_default_data()
-        save_data(data)
-        return data
-    try:
-        with open(DATA_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except (json.JSONDecodeError, FileNotFoundError):
-        return get_default_data()
+    # Return default data
+    data = get_default_data()
+    st.session_state.app_data = data
+    return data
 
 def save_data(data):
-    # Try Deta first (cloud persistent storage)
-    if deta_db:
-        try:
-            deta_db.put({"key": "main_data", "data": data})
-            return
-        except Exception:
-            pass
+    # Always update session state
+    st.session_state.app_data = data
 
-    # Fall back to file storage
+    # Try to save to file (works locally, may fail on cloud)
     try:
         os.makedirs(os.path.dirname(DATA_FILE), exist_ok=True)
         with open(DATA_FILE, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False, default=str)
     except Exception:
-        pass  # On read-only filesystem, just skip
+        pass  # On read-only filesystem, data stays in session state
 
 def backup_data():
     if not os.path.exists(DATA_FILE):
